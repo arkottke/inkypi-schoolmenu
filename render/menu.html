@@ -1,0 +1,71 @@
+{% extends "plugin.html" %}
+
+{% block content %}
+
+<div class="school-menu" style="
+--primary-color: {{ plugin_settings.primaryColor or '#323296' }};
+--text-color: {{ plugin_settings.textColor or '#000000' }};
+--bg-color: {{ plugin_settings.backgroundColor or '#ffffff' }};
+--font-scale: {{ font_scale or 1.0 }};
+">
+    <!-- Menu content begins here -->
+
+    <!-- Title -->
+    <div class="menu-title">
+        {{ plugin_settings.customTitle or 'School Lunch Menu' }}
+    </div>
+
+    <!-- Single Day Date Header -->
+    {% if plugin_settings.showDate == 'true' and menu_data|length == 1 %}
+    <div class="single-date-header">
+        {{ single_date_text }}
+    </div>
+    {% endif %}
+
+    <!-- Separator Line -->
+    <div class="separator-line"></div>
+
+    <!-- Menu Content -->
+    <div class="menu-content">
+        {% for date_str, menu_items in menu_data.items() %}
+        <div class="day-section">
+            <!-- Multi-day header -->
+            {% if menu_data|length > 1 %}
+            <div class="day-header">
+                {% if date_str == today_str %}
+                    Today
+                {% else %}
+                    {{ day_names[date_str] }}
+                {% endif %}
+                {% if plugin_settings.showDate == 'true' %}
+                    ({{ formatted_dates[date_str] }})
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Menu Items -->
+            <div class="menu-items">
+                {% if menu_items %}
+                    {% for item in menu_items %}
+                    <div class="menu-item">
+                        <span class="bullet">•</span>
+                        <span class="item-text">{{ item }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-menu">No menu available</div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Timestamp -->
+    {% if show_timestamp %}
+    <div class="timestamp">
+        Updated: {{ timestamp }}
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

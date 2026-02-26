@@ -1,0 +1,162 @@
+<div class="form-group">
+    <label for="districtId" class="form-label">District ID:</label>
+    <input type="text" id="districtId" name="districtId" class="form-input" placeholder="1212122355243477" required />
+    <small class="form-help"><strong>For Albany Unified School District, use:</strong> <code>1212122355243477</code><br>
+    <strong>To find your district ID:</strong><br>
+    1. Visit your school's nutrition website<br>
+    2. Look in the URL after "downloadMenu.php/" for the first long number<br>
+    Example: downloadMenu.php/<strong>1212122355243477</strong>/815216</small>
+</div>
+
+<div class="form-group">
+    <label for="schoolId" class="form-label">School ID:</label>
+    <input type="text" id="schoolId" name="schoolId" class="form-input" placeholder="894" required />
+    <small class="form-help"><strong>For your specific school, find the number at the end of the menu URL.</strong><br>
+        Example: webmenus2/#/view?id=68750fc5a6982437271373fa&siteCode=<strong>894</strong><br>
+    This ensures you get the exact menu for your school.</small>
+</div>
+
+<div class="form-group">
+    <label for="menuName" class="form-label">Menu Name:</label>
+    <input type="text" id="menuName" name="menuName" class="form-input" placeholder="Lunch Elementary Schools" />
+</div>
+
+<div class="form-group">
+    <label for="numDays" class="form-label">Number of Days to Display:</label>
+    <select id="numDays" name="numDays" class="form-input">
+        <option value="1">1 Day</option>
+        <option value="2">2 Days</option>
+        <option value="3">3 Days</option>
+        <option value="4">4 Days</option>
+        <option value="5">5 Days (Work Week)</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="customTitle" class="form-label">Custom Title:</label>
+    <input type="text" id="customTitle" name="customTitle" class="form-input" value="School Lunch Menu" placeholder="School Lunch Menu" />
+</div>
+
+
+<div class="form-group">
+    <label for="fontSize" class="form-label">Font Size:</label>
+    <select id="fontSize" name="fontSize" class="form-input">
+        <option value="x-small">Extra Small</option>
+        <option value="smaller">Smaller</option>
+        <option value="small">Small</option>
+        <option value="normal">Normal</option>
+        <option value="large">Large</option>
+        <option value="larger">Larger</option>
+        <option value="x-large">Extra Large</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <input type="checkbox" id="showDate" name="showDate" checked onclick="this.value=this.checked ? 'true' : 'false';">
+    <label for="showDate">Show Date</label>
+</div>
+
+<div class="form-group">
+    <label class="form-label">Display Options:</label>
+    <div class="form-group">
+        <input type="checkbox" id="displayRefreshTime" name="displayRefreshTime" onclick="this.value=this.checked ? 'true' : 'false';">
+        <label for="displayRefreshTime">Show Refresh Time</label>
+    </div>
+</div>
+
+<script>
+    // Set default values on page load or populate with existing settings
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if we're editing an existing instance (pluginSettings will be available)
+        const isEditing = typeof pluginSettings !== 'undefined' && Object.keys(pluginSettings).length > 0;
+        
+        // Menu ID
+        const menuIdInput = document.getElementById('menuId');
+        if (menuIdInput) {
+            if (isEditing && pluginSettings.menuId) {
+                menuIdInput.value = pluginSettings.menuId;
+            }
+        }
+        
+        // Site Code
+        const siteCodeInput = document.getElementById('siteCode');
+        if (siteCodeInput) {
+            if (isEditing && pluginSettings.siteCode) {
+                siteCodeInput.value = pluginSettings.siteCode;
+            }
+        }
+        
+        // Number of days
+        const numDaysSelect = document.getElementById('numDays');
+        if (numDaysSelect) {
+            if (isEditing && pluginSettings.numDays) {
+                numDaysSelect.value = pluginSettings.numDays;
+            } else if (!numDaysSelect.value) {
+                numDaysSelect.value = '1';
+            }
+        }
+        
+        // Custom title
+        const customTitleInput = document.getElementById('customTitle');
+        if (customTitleInput) {
+            if (isEditing && pluginSettings.customTitle) {
+                customTitleInput.value = pluginSettings.customTitle;
+            } else if (!customTitleInput.value) {
+                customTitleInput.value = 'School Lunch Menu';
+            }
+        }
+        
+        // Font size
+        const fontSizeSelect = document.getElementById('fontSize');
+        if (fontSizeSelect) {
+            if (isEditing && pluginSettings.fontSize) {
+                fontSizeSelect.value = pluginSettings.fontSize;
+            } else if (!fontSizeSelect.value) {
+                fontSizeSelect.value = 'normal';
+            }
+        }
+        
+        // Show date checkbox
+        const showDateCheckbox = document.getElementById('showDate');
+        if (showDateCheckbox) {
+            if (isEditing && typeof pluginSettings.showDate !== 'undefined') {
+                const showDateValue = pluginSettings.showDate === 'true' || pluginSettings.showDate === true;
+                showDateCheckbox.checked = showDateValue;
+                showDateCheckbox.value = showDateValue ? 'true' : 'false';
+            } else {
+                showDateCheckbox.checked = true;
+                showDateCheckbox.value = 'true';
+            }
+        }
+        
+        // Display refresh time checkbox
+        const displayRefreshTimeCheckbox = document.getElementById('displayRefreshTime');
+        if (displayRefreshTimeCheckbox) {
+            if (isEditing && typeof pluginSettings.displayRefreshTime !== 'undefined') {
+                const displayRefreshTimeValue = pluginSettings.displayRefreshTime === 'true' || pluginSettings.displayRefreshTime === true;
+                displayRefreshTimeCheckbox.checked = displayRefreshTimeValue;
+                displayRefreshTimeCheckbox.value = displayRefreshTimeValue ? 'true' : 'false';
+            } else {
+                displayRefreshTimeCheckbox.checked = false;
+                displayRefreshTimeCheckbox.value = 'false';
+            }
+        }
+        
+        // Add validation for menu ID field
+        const menuIdField = document.getElementById('menuId');
+        
+        function validateMenuId() {
+            const menuId = menuIdField.value.trim();
+            if (menuId && menuId.length < 10) {
+                menuIdField.setCustomValidity('Menu ID should be at least 10 characters long');
+            } else {
+                menuIdField.setCustomValidity('');
+            }
+        }
+        
+        if (menuIdField) {
+            menuIdField.addEventListener('input', validateMenuId);
+            validateMenuId(); // Initial validation
+        }
+    });
+</script>

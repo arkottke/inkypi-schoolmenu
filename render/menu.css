@@ -1,0 +1,173 @@
+/* Basic Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.school-menu {
+    width: 100%;
+    height: 100%;
+    font-family: "Jost", -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    padding: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Title */
+.menu-title {
+    font-size: calc(24px * var(--font-scale));
+    font-weight: bold;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* Single Day Date Header */
+.single-date-header {
+    font-size: calc(16px * var(--font-scale));
+    color: var(--text-color);
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* Separator Line */
+.separator-line {
+    height: 2px;
+    background-color: var(--primary-color);
+    margin: 0 10px 10px 10px;
+}
+
+/* Menu Content */
+.menu-content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.day-section {
+    margin-bottom: 10px;
+}
+
+/* Day Header for Multi-day view */
+.day-header {
+    font-size: calc(16px * var(--font-scale));
+    font-weight: normal;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+/* Menu Items */
+.menu-items {
+    margin-left: 0;
+}
+
+.menu-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 3px;
+    font-size: calc(14px * var(--font-scale));
+    line-height: 1.3;
+}
+
+.bullet {
+    color: var(--primary-color);
+    font-weight: bold;
+    margin-right: 10px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.item-text {
+    flex: 1;
+}
+
+.no-menu {
+    font-size: calc(14px * var(--font-scale));
+    color: var(--text-color);
+    font-style: italic;
+    margin-left: 15px;
+}
+
+/* Consistent indentation for all days */
+.day-section .menu-items {
+    margin-left: 15px;
+}
+
+/* Timestamp */
+.timestamp {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: calc(12px * var(--font-scale));
+    color: var(--text-color);
+    text-align: center;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-height: 300px) {
+    .school-menu {
+        padding: 5px;
+    }
+    
+    .menu-title {
+        font-size: calc(20px * var(--font-scale));
+        margin-bottom: 5px;
+    }
+    
+    .single-date-header {
+        font-size: calc(14px * var(--font-scale));
+        margin-bottom: 8px;
+    }
+    
+    .day-header {
+        font-size: calc(14px * var(--font-scale));
+    }
+    
+    .menu-item {
+        font-size: calc(12px * var(--font-scale));
+        margin-bottom: 2px;
+    }
+    
+    .timestamp {
+        font-size: calc(10px * var(--font-scale));
+        bottom: 5px;
+    }
+}
+
+/* Very small screens */
+@media (max-height: 200px) {
+    .timestamp {
+        display: none;
+    }
+    
+    .separator-line {
+        height: 1px;
+        margin: 0 5px 5px 5px;
+    }
+    
+    .menu-title {
+        font-size: calc(18px * var(--font-scale));
+        margin-bottom: 3px;
+    }
+}
+
+/* Print and high-contrast adjustments */
+@media print {
+    .school-menu {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    .menu-title,
+    .day-header,
+    .bullet {
+        color: black !important;
+    }
+    
+    .separator-line {
+        background-color: black !important;
+    }
+}
