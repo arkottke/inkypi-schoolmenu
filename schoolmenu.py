@@ -40,6 +40,7 @@ FONT_SIZES: Dict[str, float] = {
 MIN_DAYS = 1
 MAX_DAYS = 5
 PENDING_TEXT = "Not yet published"
+NO_MENU_TEXT = "No menu available"
 
 
 # Items that are considered boilerplate / ubiquitous accompaniments and should
@@ -81,13 +82,20 @@ def _validate_site_in_district(district_id: str, school_id: str) -> None:
 
     Uses a lightweight query that enumerates top-level sites for the org.
     """
-    query = f'{{  organization(id:"{district_id}") {{ id sites {{ id name }} }}}}'
-    data = _post_graphql(query).get("organization") or {}
+    query = f'{{  organization(id:"{district_id}") {{ id name sites {{ id name }} }}}}'
+    data = _post_graphql(query).get("organization")
+    if not data:
+        raise ValueError(
+            f"Organization (district) with id {district_id} not found. "
+            "Please verify your District ID is correct."
+        )
     schools = data.get("sites") or []
     school_ids = {s.get("id") for s in schools}
     if school_id not in school_ids:
+        available = [f"{s.get('id')} ({s.get('name')})" for s in schools]
         raise ValueError(
-            f"School id {school_id} not found in organization {district_id}. Available: {sorted(school_ids)}"
+            f"School id {school_id} not found in organization '{data.get('name', district_id)}'. "
+            f"Available sites: {available}"
         )
 
 
@@ -126,7 +134,11 @@ def fetch_menu_items(
     mt_data = _post_graphql(query_menu_types)
     menu_types = mt_data.get("menuTypes") or []
     if not menu_types:
-        raise ValueError("No menuTypes returned for site; cannot resolve menu name.")
+        raise ValueError(
+            f"No menu types found for site {site_id}. "
+            "This could mean the school hasn't published any menus yet, "
+            "or the School ID is incorrect."
+        )
 
     target = _normalize_name(menu_name)
     exact = [mt for mt in menu_types if _normalize_name(mt.get("name", "")) == target]
@@ -255,13 +267,19 @@ class SchoolMenu(BasePlugin):
                 cfg.menu_name,
             )
             logger.info(f"Successfully fetched {len(all_items)} dates from GraphQL")
+            # If fetch succeeded but returned no items, treat as no menu published
+            if not all_items:
+                logger.warning("Fetch succeeded but returned no menu items")
+                fetch_ok = False
+                today_iso = date.today().isoformat()
+                all_items = {today_iso: [NO_MENU_TEXT]}
         except Exception as e:  # pragma: no cover
             fetch_ok = False
             logger.error(
                 f"GraphQL fetch failed: {type(e).__name__}: {e}", exc_info=True
             )
             today_iso = date.today().isoformat()
-            all_items = {today_iso: ["Menu not available"]}
+            all_items = {today_iso: [NO_MENU_TEXT]}
 
         # Filter upcoming school days
         target_days = self._next_school_days(cfg.days)
@@ -330,9 +348,9 @@ class SchoolMenu(BasePlugin):
         if not school_id:
             raise ValueError("schoolId is required")
 
-        menu_name = settings.get("menuName", "").strip()
+        menu_name = settings.get("menuName", "Lunch").strip()
         if not menu_name:
-            raise ValueError("menuName is required")
+            menu_name = "Lunch"  # Default to Lunch menu
 
         try:
             days = int(settings.get("numDays", 3))
