@@ -100,7 +100,7 @@ def _validate_site_in_district(district_id: str, school_id: str) -> None:
 
 
 def fetch_menu_items(
-    district_id: str, site_id: str, menu_name: str, publish_location: str = "website"
+    district_id: str, site_id: str, menu_name: str, school_site_id: str = "", publish_location: str = "website"
 ) -> Dict[str, List[str]]:
     """Return mapping date -> list of product names for the current published month.
 
@@ -109,9 +109,11 @@ def fetch_menu_items(
     district_id: str
         ID of the district (e.g., 1212122355243477)
     site_id: str
-        ID of the school (e.g., 894)
+        ID of the school (e.g., 894) - corresponds to siteCode/depth_0_id
     menu_name : str
         Human-readable menu name (e.g. "Lunch Elementary Schools").
+    school_site_id : str
+        Optional sub-site ID (e.g., 1237) - corresponds to siteCode2/depth_1_id
     publish_location : str
         The location where the menu is published (e.g. "website").
 
@@ -123,7 +125,11 @@ def fetch_menu_items(
     if district_id:
         _validate_site_in_district(district_id, site_id)
 
-    site_input = "{" + f'depth_0_id:"{site_id}"' + "}"
+    # Build site input with depth_0 and optionally depth_1
+    if school_site_id:
+        site_input = "{" + f'depth_0_id:"{site_id}", depth_1_id:"{school_site_id}"' + "}"
+    else:
+        site_input = "{" + f'depth_0_id:"{site_id}"' + "}"
 
     # 1. Fetch menuTypes for site to resolve name -> menuType id
     query_menu_types = (
@@ -230,6 +236,7 @@ def fetch_menu_items(
 class ParsedSettings:
     district_id: str
     school_id: str
+    school_site_id: str
     menu_name: str
     days: int
     title: str
@@ -259,12 +266,13 @@ class SchoolMenu(BasePlugin):
         try:
             # Order: district_id, school_id, menu_name (positional to avoid duplication)
             logger.info(
-                f"Fetching menu: district={cfg.district_id}, school={cfg.school_id}, menu={cfg.menu_name}"
+                f"Fetching menu: district={cfg.district_id}, school={cfg.school_id}, school_site={cfg.school_site_id}, menu={cfg.menu_name}"
             )
             all_items = fetch_menu_items(
                 cfg.district_id,
                 cfg.school_id,
                 cfg.menu_name,
+                cfg.school_site_id,
             )
             logger.info(f"Successfully fetched {len(all_items)} dates from GraphQL")
             # If fetch succeeded but returned no items, treat as no menu published
@@ -348,6 +356,8 @@ class SchoolMenu(BasePlugin):
         if not school_id:
             raise ValueError("schoolId is required")
 
+        school_site_id = settings.get("schoolSiteId", "").strip()
+
         menu_name = settings.get("menuName", "Lunch").strip()
         if not menu_name:
             menu_name = "Lunch"  # Default to Lunch menu
@@ -376,6 +386,7 @@ class SchoolMenu(BasePlugin):
         return ParsedSettings(
             district_id=district_id,
             school_id=school_id,
+            school_site_id=school_site_id,
             menu_name=menu_name,
             days=days,
             title=title,
