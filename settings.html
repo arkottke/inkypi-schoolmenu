@@ -65,19 +65,19 @@
         // Check if we're editing an existing instance (pluginSettings will be available)
         const isEditing = typeof pluginSettings !== 'undefined' && Object.keys(pluginSettings).length > 0;
         
-        // Menu ID
-        const menuIdInput = document.getElementById('menuId');
-        if (menuIdInput) {
-            if (isEditing && pluginSettings.menuId) {
-                menuIdInput.value = pluginSettings.menuId;
+        // District ID
+        const districtIdInput = document.getElementById('districtId');
+        if (districtIdInput) {
+            if (isEditing && pluginSettings.districtId) {
+                districtIdInput.value = pluginSettings.districtId;
             }
         }
         
-        // Site Code
-        const siteCodeInput = document.getElementById('siteCode');
-        if (siteCodeInput) {
-            if (isEditing && pluginSettings.siteCode) {
-                siteCodeInput.value = pluginSettings.siteCode;
+        // School ID
+        const schoolIdInput = document.getElementById('schoolId');
+        if (schoolIdInput) {
+            if (isEditing && pluginSettings.schoolId) {
+                schoolIdInput.value = pluginSettings.schoolId;
             }
         }
         
@@ -137,21 +137,21 @@
             }
         }
         
-        // Add validation for menu ID field
-        const menuIdField = document.getElementById('menuId');
+        // Add validation for district ID field
+        const districtIdField = document.getElementById('districtId');
         
-        function validateMenuId() {
-            const menuId = menuIdField.value.trim();
-            if (menuId && menuId.length < 10) {
-                menuIdField.setCustomValidity('Menu ID should be at least 10 characters long');
+        function validateDistrictId() {
+            const districtId = districtIdField.value.trim();
+            if (districtId && districtId.length < 10) {
+                districtIdField.setCustomValidity('District ID should be at least 10 characters long');
             } else {
-                menuIdField.setCustomValidity('');
+                districtIdField.setCustomValidity('');
             }
         }
         
-        if (menuIdField) {
-            menuIdField.addEventListener('input', validateMenuId);
-            validateMenuId(); // Initial validation
+        if (districtIdField) {
+            districtIdField.addEventListener('input', validateDistrictId);
+            validateDistrictId(); // Initial validation
         }
     });
 </script>
