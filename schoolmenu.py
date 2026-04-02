@@ -358,9 +358,9 @@ class SchoolMenu(BasePlugin):
 
         school_site_id = settings.get("schoolSiteId", "").strip()
 
-        menu_name = settings.get("menuName", "Lunch").strip()
+        menu_name = settings.get("menuName", "Lunch Elementary Schools").strip()
         if not menu_name:
-            menu_name = "Lunch"  # Default to Lunch menu
+            menu_name = "Lunch Elementary Schools"  # Default to Lunch menu
 
         try:
             days = int(settings.get("numDays", 3))
